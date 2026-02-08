@@ -42,15 +42,15 @@ The application follows a modern **Client-Server** architecture with a document-
 
 ```mermaid
 graph TD
-    Client[Client (Browser/Mobile)] -->|HTTP/REST API| LB[Nginx / Load Balancer]
-    LB -->|Forward Request| Server[Express.js Backend Server]
-    
-    subgraph Data Layer
+    Client["Client - Browser/Mobile"] -->|HTTP REST API| LB["Nginx Load Balancer"]
+    LB -->|Forward Request| Server["Express.js Backend Server"]
+
+    subgraph Data_Layer
         Server -->|Mongoose ODM| DB[(MongoDB Atlas)]
     end
-    
+
     subgraph Infrastructure
-        Docker[Docker Containers]
+        Docker["Docker Containers"]
         Docker --> Client
         Docker --> Server
         Docker --> DB

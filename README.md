@@ -194,3 +194,65 @@ Project_Internship_Portal/
 ├── USER_STORIES.md     # Detailed User Stories
 └── README.md           # Project Documentation
 ```
+
+# Local Development Tools
+
+## Runtime Environment
+- **Node.js**
+
+---
+
+## Database
+- **MongoDB**
+  - Managed via **Mongoose** or **Docker**
+
+---
+
+## Backend (`/backend`)
+
+- **Framework:** Express.js  
+- **Language:** JavaScript  
+- **Development Server:** nodemon (auto-restart on file changes)  
+- **Database ODM:** mongoose  
+
+### Authentication & Security
+- jsonwebtoken (JWT)
+- bcryptjs
+- cors
+- helmet
+
+### Utilities
+- dotenv (environment variables)
+- morgan (logging)
+- cookie-parser
+
+---
+
+## Frontend (`/frontend`)
+
+- **Framework:** React (v18)  
+- **Build Tool & Dev Server:** Vite  
+- **Styling:** Tailwind CSS (with PostCSS & Autoprefixer)  
+- **Routing:** React Router DOM  
+- **State/Data Fetching:** Axios  
+
+### UI & Experience
+- lucide-react (icons)
+- framer-motion (animations)
+- react-hot-toast (notifications)
+
+### Data Visualization
+- Chart.js (react-chartjs-2)
+
+### Code Quality
+- ESLint
+
+---
+
+## Infrastructure & DevOps
+
+- **Docker**
+- **Docker Compose**
+  - Orchestrates frontend, backend, and MongoDB services
+
+---

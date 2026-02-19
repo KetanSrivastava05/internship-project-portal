@@ -44,7 +44,12 @@ const getMyApplications = async (req, res) => {
     try {
         const applications = await Application.find({ studentId: req.user._id })
             .populate('internshipId', 'title companyId')
-            .populate('internshipId.companyId', 'companyName') // Deep populate check needed usually, but simplified here
+            .populate('internshipId.companyId', 'companyName')
+            .populate({
+                path: 'projectId',
+                select: 'title facultyId',
+                populate: { path: 'facultyId', select: 'name' }
+            })
             .sort({ appliedAt: -1 });
         res.json(applications);
     } catch (error) {
@@ -105,11 +110,105 @@ const updateApplicationStatus = async (req, res) => {
         };
 
         // Strict Workflow Check
-        // if (!validTransitions[application.status].includes(status)) {
-        //    return res.status(400).json({ message: `Invalid status transition from ${application.status} to ${status}` });
-        // }
+        if (!validTransitions[application.status].includes(status)) {
+            return res.status(400).json({ message: `Invalid status transition from ${application.status} to ${status}` });
+        }
 
         application.status = status;
+        await application.save();
+
+        res.json(application);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Submit final report
+// @route   POST /api/applications/submit-report/:id
+// @access  Private (Student only)
+const submitFinalReport = async (req, res) => {
+    try {
+        const { finalReportUrl } = req.body;
+        const application = await Application.findById(req.params.id);
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        // Verify ownership
+        if (application.studentId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        if (application.status !== 'approved') {
+            return res.status(400).json({ message: 'Application must be approved before submitting report' });
+        }
+
+        application.finalReportUrl = finalReportUrl;
+        application.status = 'submitted';
+        application.submittedAt = Date.now();
+        await application.save();
+
+        res.json(application);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get submissions for evaluator
+// @route   GET /api/applications/evaluator/submissions
+// @access  Private (Evaluator only)
+const getSubmissionsForEvaluator = async (req, res) => {
+    try {
+        // Fetch applications with status 'submitted' or 'graded'
+        // For 'graded', we might only want those graded by this evaluator, or all?
+        // Let's fetch all 'submitted' ones, and 'graded' ones graded by THIS evaluator.
+        const applications = await Application.find({
+            $or: [
+                { status: 'submitted' },
+                { status: 'graded', evaluatedBy: req.user._id }
+            ]
+        })
+            .populate('studentId', 'name email')
+            .populate('internshipId', 'title')
+            .populate('projectId', 'title')
+            .sort({ submittedAt: -1 });
+
+        res.json(applications);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Evaluate application (Grade)
+// @route   POST /api/applications/evaluate/:id
+// @access  Private (Evaluator only)
+const evaluateApplication = async (req, res) => {
+    try {
+        const { grade, evaluationComments } = req.body;
+        const application = await Application.findById(req.params.id);
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        // Check if report submitted
+        if (!application.finalReportUrl) {
+            return res.status(400).json({ message: 'No report submitted' });
+        }
+
+        // Strict status check? Allow regrading?
+        // Let's allow regrading or grading 'submitted'
+        if (application.status !== 'submitted' && application.status !== 'graded') {
+            return res.status(400).json({ message: 'Application not ready for evaluation' });
+        }
+
+        application.grade = grade;
+        application.evaluationComments = evaluationComments;
+        application.evaluatedBy = req.user._id;
+        application.status = 'graded';
+        application.gradedAt = Date.now();
+
         await application.save();
 
         res.json(application);
@@ -122,5 +221,8 @@ module.exports = {
     applyForInternship,
     getMyApplications,
     getInternshipApplications,
-    updateApplicationStatus
+    updateApplicationStatus,
+    submitFinalReport,
+    getSubmissionsForEvaluator,
+    evaluateApplication
 };

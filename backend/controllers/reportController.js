@@ -35,6 +35,26 @@ const submitReport = async (req, res) => {
     }
 };
 
+// @desc    Get all reports for a student
+// @route   GET /api/reports
+// @access  Private (Student only)
+const getMyReports = async (req, res) => {
+    try {
+        if (req.user.role !== 'student') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        const reports = await WeeklyReport.find({ studentId: req.user._id })
+            .populate('internshipId', 'title companyId')
+            .populate('internshipId.companyId', 'name')
+            .sort({ createdAt: -1 });
+        
+        res.json(reports);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
 // @desc    Get reports for an internship (Student/Mentor)
 // @route   GET /api/reports/internship/:internshipId
 // @access  Private
@@ -53,7 +73,10 @@ const getReports = async (req, res) => {
         }
         // Additional security checks for company/faculty usually go here to ensure they own the internship
 
-        const reports = await WeeklyReport.find(query).sort({ weekNumber: 1 });
+        const reports = await WeeklyReport.find(query)
+            .populate('studentId', 'name email')
+            .populate('internshipId', 'title')
+            .sort({ weekNumber: 1 });
         res.json(reports);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -93,4 +116,4 @@ const reviewReport = async (req, res) => {
     }
 };
 
-module.exports = { submitReport, getReports, reviewReport };
+module.exports = { submitReport, getMyReports, getReports, reviewReport };

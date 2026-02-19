@@ -8,7 +8,7 @@ const CompanyDashboard = () => {
     const [stats, setStats] = useState({
         activeInternships: 0,
         totalApplications: 0,
-        pendingReview: 0
+        hiredInterns: 0
     });
 
     useEffect(() => {
@@ -19,12 +19,11 @@ const CompanyDashboard = () => {
         try {
             // In a real app, you'd have a specific stats endpoint. 
             // Here we might fetch lists and count, or mock for display.
-            const { data: internships } = await api.get('/internships/my-internships');
-            // For demo purposes, we'll just set some derived or placeholder stats
+            const { data } = await api.get('/analytics/company');
             setStats({
-                activeInternships: internships.filter(i => i.status === 'open').length,
-                totalApplications: 12, // Mocked as we didn't make a stats endpoint
-                pendingReview: 5
+                activeInternships: data.activeInternships,
+                totalApplications: data.totalApplications,
+                hiredInterns: data.hiredInterns
             });
         } catch (error) {
             console.error(error);
@@ -56,7 +55,7 @@ const CompanyDashboard = () => {
             <div className="grid gap-6 md:grid-cols-3">
                 <StatCard title="Active Internships" value={stats.activeInternships} icon={Briefcase} color="bg-blue-500" />
                 <StatCard title="Total Applications" value={stats.totalApplications} icon={Users} color="bg-purple-500" />
-                <StatCard title="Pending Review" value={stats.pendingReview} icon={CheckCircle} color="bg-orange-500" />
+                <StatCard title="Hired Interns" value={stats.hiredInterns} icon={CheckCircle} color="bg-green-500" />
             </div>
 
             <div className="flex gap-4">

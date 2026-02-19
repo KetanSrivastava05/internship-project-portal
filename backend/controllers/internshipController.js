@@ -36,6 +36,9 @@ const getInternshipById = async (req, res) => {
 // @access  Private (Company only)
 const createInternship = async (req, res) => {
     try {
+        console.log('Create Internship Body:', req.body); // Debug Log
+        console.log('User:', req.user); // Debug Log
+
         const {
             title,
             description,
@@ -43,8 +46,10 @@ const createInternship = async (req, res) => {
             eligibilityCriteria,
             stipend,
             duration,
+
             location,
-            deadline
+            deadline,
+            status // Add status
         } = req.body;
 
         const internship = await Internship.create({
@@ -56,8 +61,11 @@ const createInternship = async (req, res) => {
             stipend,
             duration,
             location,
-            deadline
+            deadline,
+            status: status || 'draft' // Use provided status or default
         });
+
+        console.log('Internship Created:', internship); // Debug Log
 
         res.status(201).json(internship);
     } catch (error) {

@@ -8,7 +8,8 @@ import {
     Award,
     Users,
     BarChart,
-    Settings
+    Settings,
+    MessageSquare
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -23,49 +24,66 @@ const Sidebar = () => {
                     { name: 'Internships', path: '/student/internships', icon: Briefcase },
                     { name: 'My Applications', path: '/student/applications', icon: FileText },
                     { name: 'Weekly Reports', path: '/student/reports', icon: BarChart },
+                    { name: 'Request Mentor', path: '/student/request-mentor', icon: Users },
+                    { name: 'My Mentor', path: '/student/my-mentor', icon: MessageSquare },
+                    { name: 'My Profile', path: '/profile', icon: Users },
+                    { name: 'Academic Projects', path: '/student/projects', icon: FileText },
                 ];
             case 'company':
                 return [
                     { name: 'Dashboard', path: '/company', icon: Home },
                     { name: 'Post Internship', path: '/company/post-internship', icon: Briefcase },
                     { name: 'Manage Applications', path: '/company/applications', icon: Users },
+                    { name: 'Company Profile', path: '/profile', icon: Settings },
                 ];
             case 'faculty':
                 return [
                     { name: 'Dashboard', path: '/faculty', icon: Home },
+                    { name: 'Mentorship Requests', path: '/faculty/requests', icon: Users },
+                    { name: 'My Students', path: '/faculty/students', icon: Users },
                     { name: 'Student Reports', path: '/faculty/reports', icon: FileText },
+                    { name: 'My Projects', path: '/faculty/projects', icon: Briefcase },
+                    { name: 'Post Project', path: '/faculty/post-project', icon: Users },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             case 'external_mentor':
                 return [
                     { name: 'Dashboard', path: '/external-mentor', icon: Home },
-                    { name: 'Feedback', path: '/external-mentor/feedback', icon: FileText },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             case 'evaluator':
                 return [
                     { name: 'Dashboard', path: '/evaluator', icon: Home },
-                    { name: 'Pending Evaluations', path: '/evaluator/pending', icon: Award },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             case 'college_admin':
                 return [
                     { name: 'Dashboard', path: '/college-admin', icon: Home },
                     { name: 'User Management', path: '/college-admin/users', icon: Users },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             case 'tpo':
                 return [
                     { name: 'Dashboard', path: '/tpo', icon: Home },
                     { name: 'Placement Stats', path: '/tpo/stats', icon: BarChart },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             case 'system_admin':
                 return [
                     { name: 'Dashboard', path: '/system-admin', icon: Home },
                     { name: 'System Settings', path: '/system-admin/settings', icon: Settings },
+                    { name: 'My Profile', path: '/profile', icon: Users },
                 ];
             default:
                 return [];
         }
     };
 
-    const links = getLinks(user?.role);
+    const links = getLinks(user?.role) || [];
+
+    if (!user) {
+        return null; // Don't render sidebar if user is not loaded
+    }
 
     return (
         <div className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col">
@@ -73,23 +91,26 @@ const Sidebar = () => {
                 <h1 className="text-2xl font-bold text-primary-600">InternPortal</h1>
             </div>
             <nav className="flex-1 px-4 space-y-1">
-                {links.map((link) => (
-                    <NavLink
-                        key={link.path}
-                        to={link.path}
-                        className={({ isActive }) =>
-                            clsx(
-                                'flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                                isActive
-                                    ? 'bg-primary-50 text-primary-700'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            )
-                        }
-                    >
-                        <link.icon className="mr-3 h-5 w-5" />
-                        {link.name}
-                    </NavLink>
-                ))}
+                {links.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                        <NavLink
+                            key={link.path}
+                            to={link.path}
+                            className={({ isActive }) =>
+                                clsx(
+                                    'flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                                    isActive
+                                        ? 'bg-primary-50 text-primary-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                )
+                            }
+                        >
+                            <Icon className="mr-3 h-5 w-5" />
+                            {link.name}
+                        </NavLink>
+                    );
+                })}
             </nav>
             <div className="p-4 border-t border-gray-200">
                 <div className="flex items-center mb-4">

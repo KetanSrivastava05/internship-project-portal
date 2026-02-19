@@ -12,7 +12,9 @@ const PostInternship = () => {
         duration: '',
         location: '',
         status: 'open',
-        deadline: ''
+        deadline: '',
+        skillsRequired: '', // Comma separated
+        minCgpa: ''
     });
 
     const handleChange = (e) => {
@@ -28,7 +30,15 @@ const PostInternship = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/internships', formData);
+            // Transform data before sending
+            const payload = {
+                ...formData,
+                skillsRequired: formData.skillsRequired.split(',').map(s => s.trim()),
+                eligibilityCriteria: {
+                    minCgpa: formData.minCgpa
+                }
+            };
+            await api.post('/internships', payload);
             toast.success('Internship posted successfully!');
             navigate('/company');
         } catch (error) {
@@ -67,6 +77,14 @@ const PostInternship = () => {
                         <label className="block text-sm font-medium text-gray-700">Deadline</label>
                         <input type="date" name="deadline" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
                     </div>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Skills Required (comma separated)</label>
+                    <input type="text" name="skillsRequired" placeholder="React, Node.js, MongoDB" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Minimum CGPA</label>
+                    <input type="number" step="0.1" name="minCgpa" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
                 </div>
                 <div className="flex justify-end">
                     <button type="submit" className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors">Post Internship</button>

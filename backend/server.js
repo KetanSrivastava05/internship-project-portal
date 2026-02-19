@@ -42,17 +42,33 @@ app.get('/', (req, res) => {
 });
 
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 const internshipRoutes = require('./routes/internshipRoutes');
+const facultyRoutes = require('./routes/facultyRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+
 const reportRoutes = require('./routes/reportRoutes');
 const evaluationRoutes = require('./routes/evaluationRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const externalMentorRoutes = require('./routes/externalMentorRoutes');
+const mentorshipRoutes = require('./routes/mentorshipRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 
 // Import Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/internships', internshipRoutes);
+app.use('/api/faculty', facultyRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/evaluations', evaluationRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/external-mentor', externalMentorRoutes);
+app.use('/api/mentorship', mentorshipRoutes);
+app.use('/api/projects', projectRoutes);
 // app.use('/api/users', require('./routes/userRoutes'));
 
 // Error Handling Middleware

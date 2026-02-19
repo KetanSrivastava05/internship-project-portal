@@ -7,6 +7,17 @@ const studentProfileSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    // Deprecated: supporting multiple mentors now
+    mentorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    mentors: [{
+        mentorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        mentorType: { type: String, enum: ['faculty', 'external_mentor'] },
+        assignedAt: { type: Date, default: Date.now }
+    }],
     education: {
         degree: { type: String, required: true },
         institution: { type: String, required: true },

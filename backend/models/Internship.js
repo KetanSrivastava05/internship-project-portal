@@ -40,6 +40,11 @@ const internshipSchema = new mongoose.Schema({
         type: String,
         enum: ['draft', 'open', 'closed'],
         default: 'draft'
+    },
+    academicApprovalStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
     }
 }, {
     timestamps: true

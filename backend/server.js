@@ -70,6 +70,7 @@ app.use('/api/external-mentor', externalMentorRoutes);
 app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/projects', projectRoutes);
 // app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

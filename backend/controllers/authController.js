@@ -77,6 +77,9 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.passwordHash))) {
+            if (user.status !== 'active') {
+                return res.status(403).json({ message: 'Account is deactivated. Please contact administrator.' });
+            }
             generateToken(res, user._id, user.role);
 
             res.status(200).json({

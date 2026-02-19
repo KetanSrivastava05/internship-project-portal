@@ -31,6 +31,8 @@ import StudentProjectList from './pages/StudentProjectList';
 
 import ExternalMentorDashboard from './pages/ExternalMentorDashboard';
 import EvaluatorDashboard from './pages/EvaluatorDashboard';
+import CollegeAdminDashboard from './pages/CollegeAdminDashboard';
+import UserManagement from './pages/UserManagement';
 import ChatWindow from './components/ChatWindow'; // Using as page for simplification? Or needs a wrapper.
 
 
@@ -145,7 +147,9 @@ function App() {
 
                     {/* College Admin Routes */}
                     <Route element={<ProtectedRoute allowedRoles={['college_admin']} />}>
-                        <Route path="/college-admin" element={<div><h1 className="text-2xl font-bold">College Admin Dashboard</h1><p>Administration interface coming soon.</p></div>} />
+                        <Route path="/college-admin" element={<CollegeAdminDashboard />} />
+                        <Route path="/college-admin/dashboard" element={<Navigate to="/college-admin" replace />} />
+                        <Route path="/college-admin/users" element={<UserManagement />} />
                     </Route>
 
                     {/* TPO Routes */}

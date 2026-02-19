@@ -4,6 +4,7 @@ const CompanyProfile = require('../models/CompanyProfile');
 const FacultyProfile = require('../models/FacultyProfile');
 const ExternalMentorProfile = require('../models/ExternalMentorProfile');
 const EvaluatorProfile = require('../models/EvaluatorProfile');
+const CollegeAdminProfile = require('../models/CollegeAdminProfile');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
@@ -25,6 +26,8 @@ const getUserProfile = async (req, res) => {
             profile = await ExternalMentorProfile.findOne({ userId: user._id });
         } else if (user.role === 'evaluator') {
             profile = await EvaluatorProfile.findOne({ userId: user._id });
+        } else if (user.role === 'college_admin') {
+            profile = await CollegeAdminProfile.findOne({ userId: user._id });
         }
 
         res.json({ user, profile });
@@ -137,6 +140,23 @@ const updateUserProfile = async (req, res) => {
                 Object.keys(profileFields).forEach(key => profileFields[key] === undefined && delete profileFields[key]);
 
                 updatedProfile = await EvaluatorProfile.findOneAndUpdate(
+                    { userId: user._id },
+                    { $set: profileFields },
+                    { new: true, upsert: true, setDefaultsOnInsert: true }
+                );
+            } else if (user.role === 'college_admin') {
+                const profileFields = {
+                    department: req.body.department,
+                    designation: req.body.designation,
+                    phone: req.body.phone,
+                    officeLocation: req.body.officeLocation,
+                    about: req.body.about
+                };
+
+                // Remove undefined fields
+                Object.keys(profileFields).forEach(key => profileFields[key] === undefined && delete profileFields[key]);
+
+                updatedProfile = await CollegeAdminProfile.findOneAndUpdate(
                     { userId: user._id },
                     { $set: profileFields },
                     { new: true, upsert: true, setDefaultsOnInsert: true }

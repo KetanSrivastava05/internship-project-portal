@@ -7,6 +7,6 @@ const {
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.post('/', protect, authorize('evaluator', 'faculty'), submitEvaluation);
-router.get('/student/:studentId', protect, getStudentEvaluation);
+router.get('/student/:studentId', protect, authorize('evaluator', 'faculty', 'college_admin', 'student'), getStudentEvaluation);
 
 module.exports = router;

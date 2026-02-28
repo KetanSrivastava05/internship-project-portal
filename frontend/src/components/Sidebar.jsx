@@ -70,8 +70,7 @@ const Sidebar = () => {
                 ];
             case 'system_admin':
                 return [
-                    { name: 'Dashboard', path: '/system-admin', icon: Home },
-                    { name: 'System Settings', path: '/system-admin/settings', icon: Settings },
+                    { name: 'Dashboard', path: '/sysadmin', icon: Home },
                     { name: 'My Profile', path: '/profile', icon: Users },
                 ];
 

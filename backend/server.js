@@ -72,6 +72,7 @@ app.use('/api/projects', projectRoutes);
 // app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/tpo', require('./routes/tpoRoutes'));
+app.use('/api/sysadmin', require('./routes/sysadminRoutes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

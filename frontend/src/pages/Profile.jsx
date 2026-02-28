@@ -613,8 +613,6 @@ const Profile = () => {
                     </>
                 )}
 
-                )}
-
                 {role === 'college_admin' && (
                     <>
                         <h3 className="text-lg font-medium text-gray-900">Admin Details</h3>
@@ -683,8 +681,64 @@ const Profile = () => {
                     </>
                 )}
 
+                {role === 'tpo' && (
+                    <>
+                        <h3 className="text-lg font-medium text-gray-900">Training & Placement Officer Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Designation</label>
+                                <input
+                                    type="text"
+                                    name="designation"
+                                    value={profile?.designation || ''}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                    placeholder="e.g., Head of Placements"
+                                    className="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md disabled:bg-gray-50 p-2 border"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={profile?.phone || ''}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                    placeholder="+91 98765 43210"
+                                    className="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md disabled:bg-gray-50 p-2 border"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Office Location</label>
+                                <input
+                                    type="text"
+                                    name="officeLocation"
+                                    value={profile?.officeLocation || ''}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                    placeholder="e.g., Placement Cell, Room 204"
+                                    className="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md disabled:bg-gray-50 p-2 border"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700">About / Bio</label>
+                                <textarea
+                                    name="about"
+                                    rows="4"
+                                    value={profile?.about || ''}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                    placeholder="A short welcome message or instructions for students seeking placements..."
+                                    className="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md disabled:bg-gray-50 p-2 border"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </>
+                )}
+
                 {/* Generic "No additional details" message for other roles */}
-                {!['student', 'company', 'faculty', 'external_mentor', 'evaluator', 'college_admin'].includes(role) && (
+                {!['student', 'company', 'faculty', 'external_mentor', 'evaluator', 'college_admin', 'tpo'].includes(role) && (
                     <div className="text-gray-500 italic mt-4 p-4 bg-gray-50 rounded-md">
                         Additional profile details for {role?.replace('_', ' ')} are not yet configured. You can still update your basic account info above.
                     </div>
@@ -701,7 +755,7 @@ const Profile = () => {
                     </div>
                 )}
             </form>
-        </div>
+        </div >
     );
 };
 

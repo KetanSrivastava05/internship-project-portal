@@ -71,6 +71,7 @@ app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/projects', projectRoutes);
 // app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/tpo', require('./routes/tpoRoutes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

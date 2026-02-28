@@ -5,6 +5,7 @@ const FacultyProfile = require('../models/FacultyProfile');
 const ExternalMentorProfile = require('../models/ExternalMentorProfile');
 const EvaluatorProfile = require('../models/EvaluatorProfile');
 const CollegeAdminProfile = require('../models/CollegeAdminProfile');
+const TPOProfile = require('../models/TPOProfile');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
@@ -28,6 +29,8 @@ const getUserProfile = async (req, res) => {
             profile = await EvaluatorProfile.findOne({ userId: user._id });
         } else if (user.role === 'college_admin') {
             profile = await CollegeAdminProfile.findOne({ userId: user._id });
+        } else if (user.role === 'tpo') {
+            profile = await TPOProfile.findOne({ userId: user._id });
         }
 
         res.json({ user, profile });

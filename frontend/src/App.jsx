@@ -33,6 +33,8 @@ import ExternalMentorDashboard from './pages/ExternalMentorDashboard';
 import EvaluatorDashboard from './pages/EvaluatorDashboard';
 import CollegeAdminDashboard from './pages/CollegeAdminDashboard';
 import UserManagement from './pages/UserManagement';
+import TPODashboard from './pages/TPODashboard';
+import TPOStats from './pages/TPOStats';
 import ChatWindow from './components/ChatWindow'; // Using as page for simplification? Or needs a wrapper.
 
 
@@ -154,7 +156,8 @@ function App() {
 
                     {/* TPO Routes */}
                     <Route element={<ProtectedRoute allowedRoles={['tpo']} />}>
-                        <Route path="/tpo" element={<div><h1 className="text-2xl font-bold">TPO Dashboard</h1><p>Placement management interface coming soon.</p></div>} />
+                        <Route path="/tpo" element={<TPODashboard />} />
+                        <Route path="/tpo/stats" element={<TPOStats />} />
                     </Route>
 
                     {/* System Admin Routes */}

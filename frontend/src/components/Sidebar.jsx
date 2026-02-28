@@ -74,11 +74,7 @@ const Sidebar = () => {
                     { name: 'System Settings', path: '/system-admin/settings', icon: Settings },
                     { name: 'My Profile', path: '/profile', icon: Users },
                 ];
-            case 'college_admin':
-                return [
-                    { name: 'Dashboard', path: '/college-admin/dashboard', icon: Home },
-                    { name: 'My Profile', path: '/profile', icon: Users },
-                ];
+
             default:
                 return [];
         }

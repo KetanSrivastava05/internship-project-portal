@@ -35,6 +35,7 @@ import CollegeAdminDashboard from './pages/CollegeAdminDashboard';
 import UserManagement from './pages/UserManagement';
 import TPODashboard from './pages/TPODashboard';
 import TPOStats from './pages/TPOStats';
+import SysadminDashboard from './pages/SysadminDashboard';
 import ChatWindow from './components/ChatWindow'; // Using as page for simplification? Or needs a wrapper.
 
 
@@ -162,7 +163,8 @@ function App() {
 
                     {/* System Admin Routes */}
                     <Route element={<ProtectedRoute allowedRoles={['system_admin']} />}>
-                        <Route path="/system-admin" element={<div><h1 className="text-2xl font-bold">System Admin Dashboard</h1><p>System configuration coming soon.</p></div>} />
+                        <Route path="/sysadmin" element={<SysadminDashboard />} />
+                        <Route path="/system-admin" element={<Navigate to="/sysadmin" replace />} />
                     </Route>
 
                 </Route>

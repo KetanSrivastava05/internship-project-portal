@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Users, Building, Briefcase, CheckCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { Card, CardContent } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
 
 const TPODashboard = () => {
     const [stats, setStats] = useState({
@@ -98,23 +100,23 @@ const TPODashboard = () => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Placement Analytics</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Placement Analytics</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                         Overview of campus placements, internships, and company engagement.
                     </p>
                 </div>
-                <button
+                <Button
                     onClick={handleGenerateReport}
                     disabled={generating}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-70"
+                    className="flex items-center gap-2 shadow-sm"
                 >
                     {generating ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
                     ) : (
-                        <Download className="w-5 h-5" />
+                        <Download className="w-4 h-4" />
                     )}
-                    Generate Placement Report
-                </button>
+                    Generate Report
+                </Button>
             </div>
 
             {/* Stat Cards */}
@@ -150,18 +152,21 @@ const TPODashboard = () => {
 };
 
 const StatCard = ({ title, value, icon, color }) => (
-    <motion.div
-        whileHover={{ y: -4 }}
-        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4"
-    >
-        <div className={`p-4 rounded-full ${color}`}>
-            {icon}
-        </div>
-        <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-            <h4 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</h4>
-        </div>
-    </motion.div>
+    <Card className="border-none shadow-md overflow-hidden relative group">
+        <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+                <div className={`p-4 rounded-xl ${color} ring-1 ring-inset ring-slate-900/5 transition-transform group-hover:scale-110 duration-300 ease-out`}>
+                    {icon}
+                </div>
+                <div>
+                    <p className="text-sm font-medium text-slate-500 tracking-wide uppercase">{title}</p>
+                    <h4 className="text-3xl font-bold text-slate-900 dark:text-white mt-1">{value}</h4>
+                </div>
+            </div>
+            {/* Subtle gradient accent */}
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        </CardContent>
+    </Card>
 );
 
 export default TPODashboard;

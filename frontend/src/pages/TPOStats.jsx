@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell
@@ -71,68 +72,69 @@ const TPOStats = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Placement Ratio Pie Chart */}
-                <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
-                >
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-indigo-500" />
-                        Placement Ratio
-                    </h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieChartData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {pieChartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Legend verticalAlign="bottom" height={36} />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+                <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-indigo-500" />
+                            Placement Ratio
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-64 mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieChartData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        stroke="none"
+                                    >
+                                        {pieChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Ecosystem Overview Bar Chart */}
-                <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
-                >
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                        System Overview
-                    </h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={barChartData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <XAxis dataKey="name" stroke="#9CA3AF" />
-                                <YAxis stroke="#9CA3AF" />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Legend />
-                                <Bar dataKey="Students" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="Companies" fill="#A855F7" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="Internships" fill="#F97316" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+                <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">System Overview</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-64 mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart
+                                    data={barChartData}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis dataKey="name" stroke="#94a3b8" axisLine={false} tickLine={false} />
+                                    <YAxis stroke="#94a3b8" axisLine={false} tickLine={false} />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Legend iconType="circle" />
+                                    <Bar dataKey="Students" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={40} />
+                                    <Bar dataKey="Companies" fill="#a855f7" radius={[4, 4, 0, 0]} barSize={40} />
+                                    <Bar dataKey="Internships" fill="#f97316" radius={[4, 4, 0, 0]} barSize={40} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </motion.div>
     );

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Shield, Activity, RefreshCw } from 'lucide-react';
+import { Users, Shield, Activity, RefreshCw, MoreVertical, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Badge } from '../components/ui/Badge';
 
 const SysadminDashboard = () => {
     const [activeTab, setActiveTab] = useState('users');
@@ -23,10 +26,10 @@ const SysadminDashboard = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex space-x-4 border-b border-slate-200 dark:border-slate-800">
                 <button
                     onClick={() => setActiveTab('users')}
-                    className={`py-3 px-4 flex items-center gap-2 font-medium text-sm transition-colors relative ${activeTab === 'users' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    className={`py-3 px-4 flex items-center gap-2 font-medium text-sm transition-colors relative ${activeTab === 'users' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                 >
                     <Users className="w-4 h-4" />
@@ -40,7 +43,7 @@ const SysadminDashboard = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('audit')}
-                    className={`py-3 px-4 flex items-center gap-2 font-medium text-sm transition-colors relative ${activeTab === 'audit' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    className={`py-3 px-4 flex items-center gap-2 font-medium text-sm transition-colors relative ${activeTab === 'audit' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                 >
                     <Activity className="w-4 h-4" />
@@ -115,69 +118,91 @@ const UserManagementPanel = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Management</h2>
-
-            {loading ? (
-                <p className="text-gray-500 dark:text-gray-400">Loading users...</p>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-750">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {users.map((user) => (
-                                <tr key={user._id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{user.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 capitalize">
-                                            {user.role.replace('_', ' ')}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                            {user.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => openEditModal(user)}
-                                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
+        <Card className="border-none shadow-md">
+            <CardHeader>
+                <CardTitle>User Directory</CardTitle>
+                <CardDescription>Manage user roles and disable accounts.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto rounded-md border border-slate-200 dark:border-slate-800">
+                        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+                            <thead className="bg-slate-50 dark:bg-slate-900/50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Name</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Email</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                                    <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                            </thead>
+                            <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-800">
+                                {users.map((user) => (
+                                    <motion.tr
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        key={user._id}
+                                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                    >
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{user.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.email}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <Badge variant="outline" className="capitalize text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50">
+                                                {user.role.replace('_', ' ')}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <Badge variant={user.status === 'active' ? 'success' : 'destructive'} className="capitalize">
+                                                {user.status}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => openEditModal(user)}
+                                                className="text-slate-500 hover:text-indigo-600"
+                                            >
+                                                <Edit2 className="h-4 w-4 mr-2" />
+                                                Edit
+                                            </Button>
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-            {/* Pagination Controls */}
-            {!loading && totalPages > 1 && (
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
-                    <button
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
-                    >Previous</button>
-                    <span>Page {page} of {totalPages}</span>
-                    <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
-                    >Next</button>
-                </div>
-            )}
+                {/* Pagination Controls */}
+                {!loading && totalPages > 1 && (
+                    <div className="flex justify-between items-center mt-6">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-sm font-medium text-slate-500">Page {page} of {totalPages}</span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
 
             {/* Edit User Modal */}
             {isEditModalOpen && (
@@ -212,25 +237,24 @@ const UserManagementPanel = () => {
                                     </select>
                                 </div>
                             </div>
-                            <div className="items-center px-4 py-3 mt-4 flex justify-end gap-2">
-                                <button
+                            <div className="flex justify-end gap-3 mt-6">
+                                <Button
+                                    variant="outline"
                                     onClick={() => setIsEditModalOpen(false)}
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={handleSaveUser}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                                 >
-                                    Save
-                                </button>
+                                    Save Changes
+                                </Button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </Card>
     );
 };
 
@@ -259,74 +283,90 @@ const AuditLogsPanel = () => {
     }, [page]);
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">System Audit Logs</h2>
-                <button onClick={fetchLogs} className="text-gray-500 hover:text-indigo-600">
-                    <RefreshCw className="w-5 h-5" />
-                </button>
-            </div>
-
-            {loading ? (
-                <p className="text-gray-500 dark:text-gray-400">Loading logs...</p>
-            ) : logs.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">No audit logs found.</p>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-750">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin User</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {logs.map((log) => (
-                                <tr key={log._id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        {new Date(log.timestamp).toLocaleString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                        {log.userId?.name || 'Unknown User'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded font-mono text-xs">{log.action}</span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        {log.targetEntity} ({log.targetId})
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                        <pre className="text-xs bg-gray-50 p-2 rounded max-w-xs overflow-x-auto">
-                                            {JSON.stringify(log.details, null, 2)}
-                                        </pre>
-                                    </td>
+        <Card className="border-none shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                    <CardTitle>System Audit Logs</CardTitle>
+                    <CardDescription>Immutable record of all administrative actions.</CardDescription>
+                </div>
+                <Button variant="outline" size="icon" onClick={fetchLogs}>
+                    <RefreshCw className={cn("h-4 w-4 text-slate-500", loading && "animate-spin")} />
+                </Button>
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" />
+                        ))}
+                    </div>
+                ) : logs.length === 0 ? (
+                    <div className="text-center py-12 text-slate-500">No logs found.</div>
+                ) : (
+                    <div className="overflow-x-auto rounded-md border border-slate-200 dark:border-slate-800 mt-4">
+                        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+                            <thead className="bg-slate-50 dark:bg-slate-900/50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Timestamp</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin User</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Target</th>
+                                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Details</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                            </thead>
+                            <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-800">
+                                {logs.map((log) => (
+                                    <tr key={log._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-sm">
+                                        <td className="px-6 py-4 whitespace-nowrap text-slate-500">
+                                            {new Date(log.timestamp).toLocaleString(undefined, {
+                                                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                                            })}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900 dark:text-slate-100">
+                                            {log.userId?.name || 'Unknown User'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Badge variant="secondary" className="font-mono">{log.action}</Badge>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                                            {log.targetEntity} <span className="text-slate-400">({log.targetId.substring(0, 8)}...)</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-500">
+                                            <pre className="text-xs bg-slate-50 dark:bg-slate-950 p-2 rounded-md border border-slate-100 dark:border-slate-800 max-w-xs overflow-x-auto">
+                                                {JSON.stringify(log.details, null, 2)}
+                                            </pre>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-            {/* Pagination Controls */}
-            {!loading && totalPages > 1 && (
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
-                    <button
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="px-3 py-1 border rounded disabled:opacity-50 bg-white"
-                    >Previous</button>
-                    <span className="text-sm">Page {page} of {totalPages}</span>
-                    <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="px-3 py-1 border rounded disabled:opacity-50 bg-white"
-                    >Next</button>
-                </div>
-            )}
-        </div>
+                {/* Pagination Controls */}
+                {!loading && totalPages > 1 && (
+                    <div className="flex justify-between items-center mt-6">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-sm font-medium text-slate-500">Page {page} of {totalPages}</span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 };
 

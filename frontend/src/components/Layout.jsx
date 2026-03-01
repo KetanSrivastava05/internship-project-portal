@@ -1,42 +1,26 @@
 import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-import { LogOut } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            navigate('/');
-            // Force reload to reset all state
-            window.location.href = '/';
-        } catch (error) {
-            console.error('Logout error:', error);
-            // Even if logout fails, navigate away
-            navigate('/');
-            window.location.href = '/';
-        }
-    };
-
     return (
-        <div className="flex h-screen bg-secondary-50">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="bg-white shadow-sm h-16 flex justify-end items-center px-6 z-10">
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center text-sm text-gray-600 hover:text-red-500 transition-colors"
-                    >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Logout
-                    </button>
-                </header>
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-secondary-50 p-6">
-                    <Outlet />
+        <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+            {/* Sidebar */}
+            <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+                <Sidebar />
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 lg:pl-72 flex flex-col min-h-screen transition-all duration-300">
+                <Navbar />
+
+                {/* Page Content */}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto w-full">
+                    {/* Max width container for page content */}
+                    <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
         </div>

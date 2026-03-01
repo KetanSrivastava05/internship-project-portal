@@ -82,53 +82,63 @@ const Sidebar = () => {
     const links = getLinks(user?.role) || [];
 
     if (!user) {
-        return null; // Don't render sidebar if user is not loaded
+        return null;
     }
 
     return (
-        <div className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col">
-            <div className="p-6">
-                <h1 className="text-2xl font-bold text-primary-600">InternPortal</h1>
-            </div>
-            <nav className="flex-1 px-4 space-y-1">
-                {links.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                        <NavLink
-                            key={link.path}
-                            to={link.path}
-                            className={({ isActive }) =>
-                                clsx(
-                                    'flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                                    isActive
-                                        ? 'bg-primary-50 text-primary-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                )
-                            }
-                        >
-                            <Icon className="mr-3 h-5 w-5" />
-                            {link.name}
-                        </NavLink>
-                    );
-                })}
-            </nav>
-            <div className="p-4 border-t border-gray-200">
-                <div className="flex items-center mb-4">
-                    <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-                        <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4 dark:border-slate-800 dark:bg-slate-950">
+            <div className="flex h-16 shrink-0 items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 shadow-sm">
+                        <Briefcase className="h-5 w-5 text-white" />
                     </div>
+                    <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        InternPortal
+                    </h1>
                 </div>
-                <button
-                    onClick={() => {
-                        logout();
-                        window.location.href = '/'; // Force full reload to reset state/theme
-                    }}
-                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                >
-                    Logout
-                </button>
             </div>
+
+            <nav className="flex flex-1 flex-col">
+                <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                    <li>
+                        <div className="text-xs font-semibold leading-6 text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                            Overview
+                        </div>
+                        <ul role="list" className="-mx-2 space-y-1">
+                            {links.map((link) => {
+                                const Icon = link.icon;
+                                return (
+                                    <li key={link.name}>
+                                        <NavLink
+                                            to={link.path}
+                                            className={({ isActive }) =>
+                                                clsx(
+                                                    isActive
+                                                        ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 font-semibold'
+                                                        : 'text-slate-700 hover:text-indigo-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800/50',
+                                                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 transition-all duration-200'
+                                                )
+                                            }
+                                        >
+                                            <Icon
+                                                className={clsx(
+                                                    'h-5 w-5 shrink-0 transition-colors',
+                                                    // For active state we can rely on parent text color, but force icon styling if needed
+                                                )}
+                                                aria-hidden="true"
+                                            />
+                                            {link.name}
+                                        </NavLink>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </li>
+
+                    {/* We removed the explicit logout button from the bottom of the sidebar
+                        since it's now securely located in the top Navbar profile dropdown. */}
+                </ul>
+            </nav>
         </div>
     );
 };

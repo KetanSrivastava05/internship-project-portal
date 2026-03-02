@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { AuthLayout } from '../layouts/AuthLayout';
+import { Button } from '../components/ui/Button';
 
 const Register = () => {
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        role: 'student', // Default
-        // Student specific
-        degree: '',
-        resumeUrl: '',
-        // Company specific
-        companyName: '',
-        domain: ''
+        name: '', email: '', password: '', role: 'student',
+        degree: '', resumeUrl: '', companyName: '', domain: ''
     });
 
     const { register } = useAuth();
@@ -39,7 +32,7 @@ const Register = () => {
                 case 'evaluator': navigate('/evaluator'); break;
                 case 'college_admin': navigate('/college-admin'); break;
                 case 'tpo': navigate('/tpo'); break;
-                case 'system_admin': navigate('/system-admin'); break;
+                case 'system_admin': navigate('/sysadmin'); break;
                 default: navigate('/');
             }
         } catch (error) {
@@ -48,83 +41,79 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-secondary-50 flex items-center justify-center p-4">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg"
-            >
-                <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Create Account</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+        <AuthLayout title="Create Account" subtitle="Join our platform as a new user">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                        <input name="name" type="text" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Role</label>
-                        <select name="role" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} value={formData.role}>
-                            <option value="student">Student</option>
-                            <option value="company">Company / Recruiter</option>
-                            <option value="faculty">Faculty (Internal Mentor)</option>
-                            <option value="external_mentor">External Mentor (Industry / Alumni)</option>
-                            <option value="evaluator">Evaluator</option>
-                            <option value="college_admin">College Admin</option>
-                            <option value="tpo">Training & Placement Officer (TPO)</option>
-                            <option value="system_admin">System Admin</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input name="email" type="email" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input name="password" type="password" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                    </div>
-
-                    {/* Role specific fields */}
-                    {formData.role === 'student' && (
-                        <>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Degree</label>
-                                <input name="degree" type="text" placeholder="e.g. B.Tech CSE" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Resume URL</label>
-                                <input name="resumeUrl" type="url" placeholder="Link to PDF" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                            </div>
-                        </>
-                    )}
-
-                    {formData.role === 'company' && (
-                        <>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Company Name</label>
-                                <input name="companyName" type="text" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Domain</label>
-                                <input name="domain" type="text" placeholder="e.g. Fintech" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500" onChange={handleChange} />
-                            </div>
-                        </>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-                    >
-                        Register
-                    </button>
-                </form>
-                <div className="mt-4 text-center">
-                    <Link to="/login" className="text-sm text-primary-600 hover:text-primary-500">Already have an account? Login</Link>
+                <div className="relative group">
+                    <input name="name" type="text" required placeholder="Full Name" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
+                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Full Name</label>
                 </div>
-            </motion.div>
-        </div>
+
+                <div className="relative group">
+                    <select name="role" className="w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-secondary-900 font-medium appearance-none" onChange={handleChange} value={formData.role}>
+                        <option value="student">Student</option>
+                        <option value="company">Company / Recruiter</option>
+                        <option value="faculty">Faculty (Internal Mentor)</option>
+                        <option value="external_mentor">External Mentor (Industry)</option>
+                        <option value="evaluator">Evaluator</option>
+                        <option value="college_admin">College Admin</option>
+                        <option value="tpo">Training & Placement Officer</option>
+                        <option value="system_admin">System Admin</option>
+                    </select>
+                </div>
+
+                <div className="relative group">
+                    <input name="email" type="email" required placeholder="Email Address" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
+                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Email Address</label>
+                </div>
+
+                <div className="relative group">
+                    <input name="password" type="password" required placeholder="Password" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
+                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Password</label>
+                </div>
+
+                {formData.role === 'student' && (
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="relative group">
+                            <input name="degree" type="text" placeholder="Degree (e.g. B.Tech)" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
+                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Degree</label>
+                        </div>
+                        <div className="relative group">
+                            <input name="resumeUrl" type="url" placeholder="Resume URL" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
+                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Resume URL</label>
+                        </div>
+                    </div>
+                )}
+
+                {formData.role === 'company' && (
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="relative group">
+                            <input name="companyName" type="text" placeholder="Company Name" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
+                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Company</label>
+                        </div>
+                        <div className="relative group">
+                            <input name="domain" type="text" placeholder="Domain" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
+                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Domain</label>
+                        </div>
+                    </div>
+                )}
+
+                <div className="pt-2">
+                    <Button type="submit" className="w-full text-lg">
+                        Register Account
+                    </Button>
+                </div>
+            </form>
+
+            <div className="mt-6 text-center">
+                <p className="text-secondary-600 font-medium">
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-primary-600 font-bold hover:text-primary-700 transition-colors underline decoration-2 decoration-primary-200 hover:decoration-primary-600">
+                        Sign In
+                    </Link>
+                </p>
+            </div>
+        </AuthLayout>
     );
 };
 

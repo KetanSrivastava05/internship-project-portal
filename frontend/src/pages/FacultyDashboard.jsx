@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Users, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Users, FileText, CheckCircle, Clock, ArrowRight } from 'lucide-react';
 import api from '../api/axios';
 import { Link } from 'react-router-dom';
+import { StatCard } from '../components/ui/StatCard';
+import { FadeUp, StaggerContainer, StaggerItem } from '../components/ui/AnimatedWrappers';
+import { Button } from '../components/ui/Button';
+
+// Mock charts for Faculty
+const studentsTrend = [{ value: 10 }, { value: 12 }, { value: 15 }, { value: 20 }, { value: 18 }, { value: 25 }];
+const requestsTrend = [{ value: 0 }, { value: 2 }, { value: 5 }, { value: 1 }, { value: 8 }, { value: 4 }];
 
 const FacultyDashboard = () => {
     const [stats, setStats] = useState({
@@ -13,79 +19,114 @@ const FacultyDashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const { data: students } = await api.get('/faculty/my-students');
+                const { data: requests } = await api.get('/faculty/requests');
+                setStats({
+                    totalStudents: students.length || 0,
+                    pendingRequests: requests.length || 0,
+                    reportsReviewed: 12 // Placeholder
+                });
+            } catch (error) {
+                console.error('Failed to load dashboard data', error);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchDashboardData();
     }, []);
 
-    const fetchDashboardData = async () => {
-        try {
-            // Fetch students count
-            const { data: students } = await api.get('/faculty/my-students');
-
-            // Fetch pending requests count
-            const { data: requests } = await api.get('/faculty/requests');
-
-            // For now, we simulate reports reviewed or fetch if endpoint available
-            // const { data: reports } = await api.get('/faculty/student-reports');
-
-            setStats({
-                totalStudents: students.length,
-                pendingRequests: requests.length,
-                reportsReviewed: 0 // Placeholder or calculate from reports
-            });
-        } catch (error) {
-            console.error('Failed to load dashboard data', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) return <div>Loading dashboard...</div>;
-
-    const cards = [
-        { title: 'Mentored Students', value: stats.totalStudents, icon: Users, color: 'bg-blue-500', link: '/faculty/students' },
-        { title: 'Pending Requests', value: stats.pendingRequests, icon: Clock, color: 'bg-yellow-500', link: '/faculty/requests' },
-        { title: 'Reports Reviewed', value: stats.reportsReviewed, icon: CheckCircle, color: 'bg-green-500', link: '/faculty/reports' },
-    ];
+    if (loading) return (
+        <div className="flex items-center justify-center p-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        </div>
+    );
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-gray-800">Faculty Dashboard</h1>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {cards.map((card, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500">{card.title}</p>
-                                <h3 className="text-2xl font-bold text-gray-900 mt-1">{card.value}</h3>
-                            </div>
-                            <div className={`p-3 rounded-lg ${card.color} bg-opacity-10`}>
-                                <card.icon className={`w-6 h-6 ${card.color.replace('bg-', 'text-')}`} />
-                            </div>
-                        </div>
-                        {card.link && (
-                            <Link to={card.link} className="text-sm text-primary-600 mt-4 block hover:underline">View Details &rarr;</Link>
-                        )}
-                    </motion.div>
-                ))}
-            </div>
-
-            {/* Quick Actions or Recent Activity could go here */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-                <div className="flex gap-4">
-                    <Link to="/faculty/requests" className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">Review Requests</Link>
-                    <Link to="/faculty/reports" className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">View Student Reports</Link>
+        <FadeUp className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-secondary-900 tracking-tight mb-1">Faculty Dashboard</h1>
+                    <p className="text-secondary-500 text-lg font-medium">Monitor your mentees and evaluate report submissions.</p>
+                </div>
+                <div className="flex space-x-3">
+                    <Link to="/faculty/requests">
+                        <Button variant="outline" className="text-secondary-900 border-secondary-300">
+                            {stats.pendingRequests > 0 && <span className="w-2 h-2 rounded-full bg-red-500 mr-2 animate-ping" />}
+                            Filter Requests
+                        </Button>
+                    </Link>
                 </div>
             </div>
-        </div>
+
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StaggerItem>
+                    <StatCard
+                        title="Mentored Students"
+                        value={stats.totalStudents}
+                        icon={Users}
+                        data={studentsTrend}
+                        colorClass="text-blue-600"
+                        bgClass="bg-blue-100"
+                        strokeColor="#2563eb"
+                        trend={{ positive: true, value: 15 }}
+                    />
+                </StaggerItem>
+                <StaggerItem>
+                    <StatCard
+                        title="Pending Requests"
+                        value={stats.pendingRequests}
+                        icon={Clock}
+                        data={requestsTrend}
+                        colorClass="text-amber-600"
+                        bgClass="bg-amber-100"
+                        strokeColor="#d97706"
+                        trend={stats.pendingRequests > 0 ? { positive: false, value: 50 } : null}
+                    />
+                </StaggerItem>
+                <StaggerItem>
+                    <StatCard
+                        title="Reports Evaluated"
+                        value={stats.reportsReviewed}
+                        icon={CheckCircle}
+                        colorClass="text-emerald-600"
+                        bgClass="bg-emerald-100"
+                        strokeColor="#059669"
+                        trend={{ positive: true, value: 30 }}
+                    />
+                </StaggerItem>
+            </StaggerContainer>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div className="bg-white rounded-2xl p-6 border border-secondary-200 shadow-sm relative overflow-hidden group hover:border-primary-300 transition-colors">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-30 pointer-events-none group-hover:opacity-60 transition-opacity duration-500" />
+                    <h2 className="text-xl font-bold text-secondary-900 mb-2 relative z-10 flex items-center">
+                        <Clock className="w-5 h-5 mr-2 text-primary-500" /> Request Inbox
+                    </h2>
+                    <p className="text-secondary-500 mb-6 relative z-10">You have <span className="font-bold text-secondary-900">{stats.pendingRequests}</span> student mentorship requests waiting for approval.</p>
+                    <Link to="/faculty/requests">
+                        <Button variant={stats.pendingRequests > 0 ? "primary" : "outline"} className="w-full relative z-10">
+                            Review Inbox {stats.pendingRequests > 0 && `(${stats.pendingRequests})`} <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </Link>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-secondary-200 shadow-sm relative overflow-hidden group hover:border-emerald-300 transition-colors">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-30 pointer-events-none group-hover:opacity-60 transition-opacity duration-500" />
+                    <h2 className="text-xl font-bold text-secondary-900 mb-2 relative z-10 flex items-center">
+                        <FileText className="w-5 h-5 mr-2 text-emerald-500" /> Weekly Reports
+                    </h2>
+                    <p className="text-secondary-500 mb-6 relative z-10">Provide feedback and evaluate your students' weekly progress submissions.</p>
+                    <Link to="/faculty/reports">
+                        <Button variant="outline" className="w-full relative z-10 bg-white border-secondary-300">
+                            Evaluate Reports <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+
+        </FadeUp>
     );
 };
 

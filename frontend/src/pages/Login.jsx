@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import BackgroundLogos from '../components/BackgroundLogos';
+import { AuthLayout } from '../layouts/AuthLayout';
+import { Button } from '../components/ui/Button';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -26,7 +26,7 @@ const Login = () => {
                 case 'evaluator': navigate('/evaluator'); break;
                 case 'college_admin': navigate('/college-admin'); break;
                 case 'tpo': navigate('/tpo'); break;
-                case 'system_admin': navigate('/system-admin'); break;
+                case 'system_admin': navigate('/sysadmin'); break;
                 default: navigate('/');
             }
         } catch (error) {
@@ -35,53 +35,51 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-secondary-50 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            <BackgroundLogos />
-
-            <div className="text-center mb-8 relative z-10">
-                <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">InternPortal</h1>
-                <p className="text-gray-600 mt-2">Internship & Project Management Portal</p>
-            </div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/80 rounded-xl shadow-xl border border-gray-100 p-8 w-full max-w-md backdrop-blur-md relative z-10"
-            >
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Welcome Back</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            required
-                            className="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            required
-                            className="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-                    >
-                        Sign In
-                    </button>
-                </form>
-                <div className="mt-4 text-center">
-                    <Link to="/register" className="text-sm text-primary-600 hover:text-primary-500">Don't have an account? Register</Link>
+        <AuthLayout title="Welcome Back" subtitle="Sign in to your account to continue">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="relative group">
+                    <input
+                        type="email"
+                        required
+                        className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
+                        Email Address
+                    </label>
                 </div>
-            </motion.div>
-        </div>
+                <div className="relative group">
+                    <input
+                        type="password"
+                        required
+                        className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
+                        Password
+                    </label>
+                </div>
+
+                <div className="pt-2">
+                    <Button type="submit" className="w-full text-lg">
+                        Sign In
+                    </Button>
+                </div>
+            </form>
+
+            <div className="mt-8 text-center">
+                <p className="text-secondary-600 font-medium">
+                    New here?{' '}
+                    <Link to="/register" className="text-primary-600 font-bold hover:text-primary-700 transition-colors underline decoration-2 decoration-primary-200 hover:decoration-primary-600">
+                        Create an account
+                    </Link>
+                </p>
+            </div>
+        </AuthLayout>
     );
 };
 

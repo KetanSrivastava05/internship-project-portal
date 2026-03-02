@@ -3,6 +3,12 @@ import { motion } from 'framer-motion';
 import { Users, Building, Briefcase, CheckCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { StatCard } from '../components/ui/StatCard';
+import { FadeUp, StaggerContainer, StaggerItem } from '../components/ui/AnimatedWrappers';
+import { Button } from '../components/ui/Button';
+
+// Mock charts for TPO
+const placementTrend = [{ value: 10 }, { value: 25 }, { value: 40 }, { value: 65 }, { value: 80 }, { value: 95 }];
 
 const TPODashboard = () => {
     const [stats, setStats] = useState({
@@ -44,7 +50,6 @@ const TPODashboard = () => {
                 return;
             }
 
-            // Convert JSON to CSV
             const headers = ['Application ID', 'Student Name', 'Student Email', 'Company Name', 'Role', 'Approval Date'];
             const csvRows = [headers.join(',')];
 
@@ -83,85 +88,87 @@ const TPODashboard = () => {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="flex items-center justify-center p-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
             </div>
         );
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-6 md:p-8 space-y-8"
-        >
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <FadeUp className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Placement Analytics</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Overview of campus placements, internships, and company engagement.
-                    </p>
+                    <h1 className="text-3xl font-extrabold text-secondary-900 tracking-tight mb-1">Placement Analytics</h1>
+                    <p className="text-secondary-500 text-lg font-medium">Overview of campus placements, internships, and engagement.</p>
                 </div>
-                <button
+                <Button
                     onClick={handleGenerateReport}
                     disabled={generating}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-70"
+                    className="flex items-center gap-2 shadow-3d-active"
                 >
                     {generating ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
                     ) : (
                         <Download className="w-5 h-5" />
                     )}
-                    Generate Placement Report
-                </button>
+                    Export CSV Report
+                </Button>
             </div>
 
-            {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard
-                    title="Total Students"
-                    value={stats.totalStudents}
-                    icon={<Users className="w-6 h-6 text-blue-500" />}
-                    color="bg-blue-50 dark:bg-blue-900/20"
-                />
-                <StatCard
-                    title="Placed Students"
-                    value={stats.totalPlacedStudents}
-                    icon={<CheckCircle className="w-6 h-6 text-emerald-500" />}
-                    color="bg-emerald-50 dark:bg-emerald-900/20"
-                />
-                <StatCard
-                    title="Active Companies"
-                    value={stats.totalCompanies}
-                    icon={<Building className="w-6 h-6 text-purple-500" />}
-                    color="bg-purple-50 dark:bg-purple-900/20"
-                />
-                <StatCard
-                    title="Total Internships"
-                    value={stats.totalInternships}
-                    icon={<Briefcase className="w-6 h-6 text-orange-500" />}
-                    color="bg-orange-50 dark:bg-orange-900/20"
-                />
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StaggerItem>
+                    <StatCard
+                        title="Total Students"
+                        value={stats.totalStudents || 0}
+                        icon={Users}
+                        colorClass="text-blue-600"
+                        bgClass="bg-blue-100"
+                        strokeColor="#2563eb"
+                    />
+                </StaggerItem>
+                <StaggerItem>
+                    <StatCard
+                        title="Placed Students"
+                        value={stats.totalPlacedStudents || 0}
+                        icon={CheckCircle}
+                        data={placementTrend}
+                        colorClass="text-emerald-600"
+                        bgClass="bg-emerald-100"
+                        strokeColor="#059669"
+                        trend={{ positive: true, value: 8 }}
+                    />
+                </StaggerItem>
+                <StaggerItem>
+                    <StatCard
+                        title="Active Companies"
+                        value={stats.totalCompanies || 0}
+                        icon={Building}
+                        colorClass="text-purple-600"
+                        bgClass="bg-purple-100"
+                        strokeColor="#9333ea"
+                    />
+                </StaggerItem>
+                <StaggerItem>
+                    <StatCard
+                        title="Total Internships"
+                        value={stats.totalInternships || 0}
+                        icon={Briefcase}
+                        colorClass="text-orange-600"
+                        bgClass="bg-orange-100"
+                        strokeColor="#ea580c"
+                    />
+                </StaggerItem>
+            </StaggerContainer>
+
+            <div className="bg-white rounded-2xl p-8 border border-secondary-200 shadow-sm mt-8">
+                <h2 className="text-xl font-bold text-secondary-900 mb-6">Placement Distribution (Mock View)</h2>
+                <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-secondary-200 rounded-xl bg-secondary-50">
+                    <p className="text-secondary-500 font-medium">Detailed Recharts visual goes here mapping domains vs placements.</p>
+                </div>
             </div>
 
-        </motion.div>
+        </FadeUp>
     );
 };
-
-const StatCard = ({ title, value, icon, color }) => (
-    <motion.div
-        whileHover={{ y: -4 }}
-        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4"
-    >
-        <div className={`p-4 rounded-full ${color}`}>
-            {icon}
-        </div>
-        <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-            <h4 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</h4>
-        </div>
-    </motion.div>
-);
 
 export default TPODashboard;

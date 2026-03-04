@@ -74,8 +74,17 @@ We have documented **25 key user stories** covering all roles to ensure comprehe
 *   **Won't Have (v1):** Blockchain-based Certificate Verification, Video Interviewing Platform.
 
 ### 🖌️ Wireframes
-Initial designs were created in Figma to ensure a user-centric experience.
-*(Placeholder: Add link to Figma project here)*
+Designs were created in Figma to ensure a user-centric experience.
+
+### 🏗️ Software Design
+The platform employs a decoupled Client-Server architecture utilizing the MERN stack to ensure high scalability and separation of concerns. The React frontend consumes JSON APIs from a Node.js/Express backend that utilizes a centralized MVC (Model-View-Controller) structure, keeping individual business logic, routing, and database schemas highly modular and strictly cohesive. Role-Based Access Control (RBAC) is enforced through a JWT stateless middleware layer, preventing tight coupling of security definitions to core application controllers.
+
+#### Architecture Diagram
+![System Architecture Diagram](design/Architecture_Diagram.png)
+
+#### User Interface Wireframes
+- ![Landing Page Wireframe](design/wireframe_1.png)
+- ![Dashboard Wireframe](design/wireframe_5.png)
 
 ---
 

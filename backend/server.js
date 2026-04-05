@@ -55,6 +55,7 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const externalMentorRoutes = require('./routes/externalMentorRoutes');
 const mentorshipRoutes = require('./routes/mentorshipRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Import Routes
 app.use('/api/auth', authRoutes);
@@ -73,6 +74,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/tpo', require('./routes/tpoRoutes'));
 app.use('/api/sysadmin', require('./routes/sysadminRoutes'));
+app.use('/api/ai', aiRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

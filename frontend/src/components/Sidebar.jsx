@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Home, Briefcase, FileText, Award, Users, BarChart, Settings,
-    MessageSquare, ChevronLeft, ChevronRight, LogOut
+    MessageSquare, ChevronLeft, ChevronRight, LogOut, Sparkles
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -19,6 +19,7 @@ const Sidebar = () => {
                 { name: 'Internships', path: '/student/internships', icon: Briefcase },
                 { name: 'Applications', path: '/student/applications', icon: FileText },
                 { name: 'Reports', path: '/student/reports', icon: BarChart },
+                { name: 'Career AI', path: '/student/career-advisor', icon: Sparkles },
                 { name: 'Request Mentor', path: '/student/request-mentor', icon: Users },
                 { name: 'My Mentor', path: '/student/my-mentor', icon: MessageSquare },
                 { name: 'Profile', path: '/profile', icon: Settings },

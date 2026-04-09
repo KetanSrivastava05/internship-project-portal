@@ -15,12 +15,31 @@ const reportTrend = [{ value: 5 }, { value: 10 }, { value: 15 }, { value: 20 }, 
 const StudentDashboard = () => {
     const { user } = useAuth();
     const [mentors, setMentors] = useState([]);
+    const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const getTimeAgo = (date) => {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        let interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        return Math.floor(seconds) + " seconds ago";
+    };
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const { data: profileData } = await api.get('/users/profile');
+                const [profileRes, appsRes] = await Promise.all([
+                    api.get('/users/profile'),
+                    api.get('/applications/my-applications')
+                ]);
+                
+                const profileData = profileRes.data;
+                const appsData = appsRes.data;
+
                 if (profileData && profileData.profile) {
                     const loadedMentors = [];
                     if (profileData.profile.mentorId && typeof profileData.profile.mentorId === 'object') {
@@ -37,6 +56,38 @@ const StudentDashboard = () => {
                     }
                     setMentors(loadedMentors);
                 }
+
+                // Generate Activities from Applications
+                let generatedActivities = [];
+                appsData.forEach(app => {
+                    const itemName = app.internshipId ? app.internshipId.title : (app.projectId?.title || 'Opportunity');
+                    
+                    if (app.appliedAt) {
+                        generatedActivities.push({
+                            title: 'Application Submitted',
+                            desc: itemName,
+                            timeStr: getTimeAgo(app.appliedAt),
+                            timeStamp: new Date(app.appliedAt).getTime(),
+                            color: 'bg-blue-500'
+                        });
+                    }
+                    if (app.status === 'approved' || app.status === 'submitted' || app.status === 'graded') {
+                        // We use updatedAt as a proxy for status change if specific dates aren't heavily tracked
+                        const statusDate = app.updatedAt || app.appliedAt;
+                        generatedActivities.push({
+                            title: `Application ${app.status.charAt(0).toUpperCase() + app.status.slice(1)}`,
+                            desc: itemName,
+                            timeStr: getTimeAgo(statusDate),
+                            timeStamp: new Date(statusDate).getTime(),
+                            color: app.status === 'approved' ? 'bg-green-500' : (app.status === 'graded' ? 'bg-purple-500' : 'bg-orange-500')
+                        });
+                    }
+                });
+
+                // Sort descending by timeStamp and take top 4
+                generatedActivities.sort((a, b) => b.timeStamp - a.timeStamp);
+                setActivities(generatedActivities.slice(0, 4));
+
             } catch (error) {
                 console.error('Failed to load dashboard data', error);
             } finally {
@@ -180,21 +231,23 @@ const StudentDashboard = () => {
                     <div className="bg-white rounded-2xl shadow-sm border border-secondary-200 p-6">
                         <h2 className="text-xl font-bold text-secondary-900 tracking-tight mb-6">Recent Activity</h2>
                         <div className="space-y-6">
-                            {[
-                                { title: 'Application Submitted', desc: 'Google Swe Intern', time: '2 hours ago', color: 'bg-blue-500' },
-                                { title: 'Report Approved', desc: 'Week 4 Progress Report', time: '1 day ago', color: 'bg-green-500' },
-                                { title: 'Mentor Assigned', desc: 'Prof. Sharma (Internal)', time: '3 days ago', color: 'bg-purple-500' }
-                            ].map((activity, i) => (
-                                <div key={i} className="flex relative">
-                                    <div className={`w-3 h-3 mt-1.5 rounded-full z-10 ${activity.color} ring-4 ring-white`} />
-                                    {i < 2 && <div className="absolute top-3 left-1.5 w-[2px] h-16 bg-secondary-200" />}
-                                    <div className="ml-4">
-                                        <h4 className="text-sm font-bold text-secondary-900">{activity.title}</h4>
-                                        <p className="text-xs text-secondary-500 mt-0.5">{activity.desc}</p>
-                                        <span className="text-xs font-semibold text-secondary-400 mt-1 block">{activity.time}</span>
+                            {activities.length > 0 ? (
+                                activities.map((activity, i) => (
+                                    <div key={i} className="flex relative">
+                                        <div className={`w-3 h-3 mt-1.5 rounded-full z-10 ${activity.color} ring-4 ring-white`} />
+                                        {i < activities.length - 1 && <div className="absolute top-3 left-1.5 w-[2px] h-16 bg-secondary-200" />}
+                                        <div className="ml-4">
+                                            <h4 className="text-sm font-bold text-secondary-900">{activity.title}</h4>
+                                            <p className="text-xs text-secondary-500 mt-0.5">{activity.desc}</p>
+                                            <span className="text-xs font-semibold text-secondary-400 mt-1 block">{activity.timeStr}</span>
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-4">
+                                    <p className="text-sm text-secondary-500">No recent activity found.</p>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>

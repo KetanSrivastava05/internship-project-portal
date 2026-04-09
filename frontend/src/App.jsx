@@ -11,6 +11,7 @@ import LandingPage from './pages/LandingPage';
 import StudentDashboard from './pages/StudentDashboard';
 import InternshipList from './components/InternshipList';
 import StudentApplications from './components/StudentApplications';
+import CareerAdvisor from './pages/CareerAdvisor';
 
 import CompanyDashboard from './pages/CompanyDashboard';
 import PostInternship from './pages/PostInternship';
@@ -113,6 +114,7 @@ function App() {
                         <Route path="/student/request-mentor" element={<RequestMentor />} />
                         <Route path="/student/my-mentor" element={<MyMentor />} />
                         <Route path="/student/projects" element={<StudentProjectList />} />
+                        <Route path="/student/career-advisor" element={<CareerAdvisor />} />
                         {/* Add more student routes here */}
                     </Route>
 

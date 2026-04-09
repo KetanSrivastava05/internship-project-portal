@@ -46,7 +46,7 @@ const Register = () => {
 
                 <div className="relative group">
                     <input name="name" type="text" required placeholder="Full Name" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
-                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Full Name</label>
+                    <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Full Name</label>
                 </div>
 
                 <div className="relative group">
@@ -64,23 +64,23 @@ const Register = () => {
 
                 <div className="relative group">
                     <input name="email" type="email" required placeholder="Email Address" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
-                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Email Address</label>
+                    <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Email Address</label>
                 </div>
 
                 <div className="relative group">
                     <input name="password" type="password" required placeholder="Password" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all placeholder-transparent" onChange={handleChange} />
-                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Password</label>
+                    <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Password</label>
                 </div>
 
                 {formData.role === 'student' && (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="relative group">
                             <input name="degree" type="text" placeholder="Degree (e.g. B.Tech)" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
-                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Degree</label>
+                            <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Degree</label>
                         </div>
                         <div className="relative group">
                             <input name="resumeUrl" type="url" placeholder="Resume URL" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
-                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Resume URL</label>
+                            <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Resume URL</label>
                         </div>
                     </div>
                 )}
@@ -89,11 +89,11 @@ const Register = () => {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="relative group">
                             <input name="companyName" type="text" placeholder="Company Name" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
-                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Company</label>
+                            <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Company</label>
                         </div>
                         <div className="relative group">
                             <input name="domain" type="text" placeholder="Domain" className="peer w-full px-4 py-3 bg-white border-2 border-secondary-200 rounded-xl focus:outline-none focus:border-primary-500 transition-all placeholder-transparent" onChange={handleChange} />
-                            <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Domain</label>
+                            <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">Domain</label>
                         </div>
                     </div>
                 )}

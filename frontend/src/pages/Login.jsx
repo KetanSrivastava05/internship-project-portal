@@ -46,7 +46,7 @@ const Login = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
+                    <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
                         Email Address
                     </label>
                 </div>
@@ -59,7 +59,7 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <label className="absolute left-4 top-1/2 text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
+                    <label className="absolute left-4 top-0 text-xs text-secondary-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-primary-600 bg-white px-1 font-medium pointer-events-none -translate-y-1/2">
                         Password
                     </label>
                 </div>

@@ -1,16 +1,16 @@
 const User = require('../models/User');
 const Application = require('../models/Application');
 const Internship = require('../models/Internship');
+const Project = require('../models/Project');
+const CompanyProfile = require('../models/CompanyProfile');
 
 // @desc    Get placement analytics for TPO dashboard
 // @route   GET /api/tpo/analytics
 // @access  Private (TPO only)
 const getAnalytics = async (req, res) => {
     try {
-        console.log("Fetching total students...");
         // 1. Total Students
         const totalStudents = await User.countDocuments({ role: 'student' });
-        console.log("Total students: ", totalStudents);
 
         // 2. Total Companies
         const totalCompanies = await User.countDocuments({ role: 'company' });
@@ -19,29 +19,54 @@ const getAnalytics = async (req, res) => {
         const totalInternships = await Internship.countDocuments({});
 
         // 4. Total Placed Students 
-        // A student might have multiple applications, so we find distinct students who have an 'approved' application
-        console.log("Fetching approved applications...");
         const approvedApplications = await Application.find({ status: 'approved' }).select('studentId');
-        console.log(`Found ${approvedApplications.length} approved applications`);
-
-        let totalPlacedStudents = 0;
-        try {
-            const uniquePlacedStudents = new Set(approvedApplications.map(app => app.studentId.toString()));
-            totalPlacedStudents = uniquePlacedStudents.size;
-            console.log("Calculated total placed students: ", totalPlacedStudents);
-        } catch (mapErr) {
-            console.error("Error calculating unique placed students", mapErr);
-        }
+        const uniquePlacedStudents = new Set(approvedApplications.map(app => app.studentId.toString()));
+        const totalPlacedStudents = uniquePlacedStudents.size;
 
         // 5. Active Internships
         const activeInternships = await Internship.countDocuments({ status: 'open' });
+
+        // 6. Domain Statistics (Mapping Domains vs Placements)
+        // Fetch all approved applications with their internship/project info
+        const placements = await Application.find({ status: 'approved' })
+            .populate({
+                path: 'internshipId',
+                select: 'companyId',
+                populate: { path: 'companyId', select: '_id' }
+            })
+            .populate({
+                path: 'projectId',
+                select: 'domain'
+            });
+
+        const domainCounts = {};
+
+        for (const app of placements) {
+            let domain = 'Other';
+            if (app.internshipId && app.internshipId.companyId) {
+                const companyProfile = await CompanyProfile.findOne({ userId: app.internshipId.companyId._id });
+                if (companyProfile && companyProfile.domain) {
+                    domain = companyProfile.domain;
+                }
+            } else if (app.projectId && app.projectId.domain) {
+                domain = app.projectId.domain;
+            }
+            
+            domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+        }
+
+        const domainStats = Object.keys(domainCounts).map(domain => ({
+            name: domain,
+            placements: domainCounts[domain]
+        })).sort((a, b) => b.placements - a.placements);
 
         res.json({
             totalStudents,
             totalCompanies,
             totalInternships,
             totalPlacedStudents,
-            activeInternships
+            activeInternships,
+            domainStats
         });
     } catch (error) {
         console.error('TPO Analytics Error:', error);
@@ -49,46 +74,80 @@ const getAnalytics = async (req, res) => {
     }
 };
 
-// @desc    Get detailed placement report (list of placed students)
+// @desc    Get detailed technical report (everything: internships and projects)
 // @route   GET /api/tpo/reports
 // @access  Private (TPO only)
 const getPlacementReport = async (req, res) => {
     try {
-        // Find all approved applications and populate student and internship (which includes company)
-        const placements = await Application.find({ status: 'approved' })
-            .populate('studentId', 'name email')
-            .populate({
-                path: 'internshipId',
-                select: 'title companyId',
-                populate: {
-                    path: 'companyId',
-                    select: 'name email profile', // Assuming Company name is stored in User model under 'name' or we might need CompanyProfile
-                }
-            })
-            .sort({ updatedAt: -1 });
+        // 1. Fetch Internships and their applications
+        const internships = await Internship.find()
+            .populate('companyId', 'name email')
+            .sort({ createdAt: -1 });
 
-        // Format data for easier consumption on frontend
-        const formattedReport = placements.map(app => {
-            // Check if population was successful
-            const studentName = app.studentId ? app.studentId.name : 'Unknown Student';
-            const studentEmail = app.studentId ? app.studentId.email : 'Unknown Email';
-            const internshipTitle = app.internshipId ? app.internshipId.title : 'Unknown Role';
+        const internshipData = await Promise.all(internships.map(async (inst) => {
+            const approvedApps = await Application.find({ internshipId: inst._id, status: 'approved' })
+                .populate('studentId', 'name email');
+            
+            if (approvedApps.length > 0) {
+                return approvedApps.map(app => ({
+                    type: 'Internship',
+                    title: inst.title,
+                    provider: inst.companyId ? inst.companyId.name : 'Unknown Company',
+                    status: 'Filled',
+                    studentName: app.studentId ? app.studentId.name : 'N/A',
+                    studentEmail: app.studentId ? app.studentId.email : 'N/A',
+                    date: app.updatedAt
+                }));
+            } else {
+                return [{
+                    type: 'Internship',
+                    title: inst.title,
+                    provider: inst.companyId ? inst.companyId.name : 'Unknown Company',
+                    status: inst.status === 'open' ? 'Open' : 'Closed (Unfilled)',
+                    studentName: 'N/A',
+                    studentEmail: 'N/A',
+                    date: inst.updatedAt
+                }];
+            }
+        }));
 
-            // Depending on how company data is stored: 
-            // the 'internshipId.companyId' refers to User model for the company
-            const companyName = (app.internshipId && app.internshipId.companyId) ? app.internshipId.companyId.name : 'Unknown Company';
+        // 2. Fetch Projects and their applications
+        const projects = await Project.find()
+            .populate('facultyId', 'name email')
+            .sort({ createdAt: -1 });
 
-            return {
-                applicationId: app._id,
-                studentName,
-                studentEmail,
-                companyName,
-                role: internshipTitle,
-                approvalDate: app.updatedAt
-            };
-        });
+        const projectData = await Promise.all(projects.map(async (proj) => {
+            const approvedApps = await Application.find({ projectId: proj._id, status: 'approved' })
+                .populate('studentId', 'name email');
+            
+            if (approvedApps.length > 0) {
+                return approvedApps.map(app => ({
+                    type: 'Project',
+                    title: proj.title,
+                    provider: proj.facultyId ? proj.facultyId.name : 'Unknown Faculty',
+                    status: 'Filled',
+                    studentName: app.studentId ? app.studentId.name : 'N/A',
+                    studentEmail: app.studentId ? app.studentId.email : 'N/A',
+                    date: app.updatedAt
+                }));
+            } else {
+                return [{
+                    type: 'Project',
+                    title: proj.title,
+                    provider: proj.facultyId ? proj.facultyId.name : 'Unknown Faculty',
+                    status: proj.status === 'open' ? 'Open' : 'Closed (Unfilled)',
+                    studentName: 'N/A',
+                    studentEmail: 'N/A',
+                    date: proj.updatedAt
+                }];
+            }
+        }));
 
-        res.json(formattedReport);
+        // Flatten and combine
+        const flatInternships = internshipData.flat();
+        const flatProjects = projectData.flat();
+        
+        res.json([...flatInternships, ...flatProjects]);
     } catch (error) {
         console.error('TPO Report Error:', error);
         res.status(500).json({ message: 'Server Error fetching placement report', error: error.message });

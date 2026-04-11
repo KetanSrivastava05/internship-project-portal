@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Building, Briefcase, CheckCircle, Download } from 'lucide-react';
+import { Users, Building, Briefcase, CheckCircle, Download, Layers } from 'lucide-react';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
+} from 'recharts';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 import { StatCard } from '../components/ui/StatCard';
 import { FadeUp, StaggerContainer, StaggerItem } from '../components/ui/AnimatedWrappers';
 import { Button } from '../components/ui/Button';
 
-// Mock charts for TPO
-const placementTrend = [{ value: 10 }, { value: 25 }, { value: 40 }, { value: 65 }, { value: 80 }, { value: 95 }];
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
 
 const TPODashboard = () => {
     const [stats, setStats] = useState({
@@ -16,7 +18,8 @@ const TPODashboard = () => {
         totalCompanies: 0,
         totalInternships: 0,
         totalPlacedStudents: 0,
-        activeInternships: 0
+        activeInternships: 0,
+        domainStats: []
     });
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
@@ -39,28 +42,29 @@ const TPODashboard = () => {
 
     const handleGenerateReport = async () => {
         setGenerating(true);
-        const toastId = toast.loading('Generating placement report...');
+        const toastId = toast.loading('Generating comprehensive report...');
         try {
             const response = await api.get('/tpo/reports');
             const data = response.data;
 
             if (data.length === 0) {
-                toast.error('No placement data available to export.', { id: toastId });
+                toast.error('No data available to export.', { id: toastId });
                 setGenerating(false);
                 return;
             }
 
-            const headers = ['Application ID', 'Student Name', 'Student Email', 'Company Name', 'Role', 'Approval Date'];
+            const headers = ['Type', 'Title', 'Company/Faculty', 'Status', 'Student Name', 'Student Email', 'Date'];
             const csvRows = [headers.join(',')];
 
             data.forEach(row => {
                 const values = [
-                    row.applicationId,
+                    row.type,
+                    `"${row.title.replace(/"/g, '""')}"`,
+                    `"${row.provider.replace(/"/g, '""')}"`,
+                    `"${row.status}"`,
                     `"${row.studentName}"`,
                     `"${row.studentEmail}"`,
-                    `"${row.companyName}"`,
-                    `"${row.role}"`,
-                    new Date(row.approvalDate).toLocaleDateString()
+                    new Date(row.date).toLocaleDateString()
                 ];
                 csvRows.push(values.join(','));
             });
@@ -72,7 +76,7 @@ const TPODashboard = () => {
             const a = document.createElement('a');
             a.setAttribute('hidden', '');
             a.setAttribute('href', url);
-            a.setAttribute('download', `placement_report_${new Date().toISOString().split('T')[0]}.csv`);
+            a.setAttribute('download', `comprehensive_report_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -131,7 +135,6 @@ const TPODashboard = () => {
                         title="Placed Students"
                         value={stats.totalPlacedStudents || 0}
                         icon={CheckCircle}
-                        data={placementTrend}
                         colorClass="text-emerald-600"
                         bgClass="bg-emerald-100"
                         strokeColor="#059669"
@@ -161,10 +164,49 @@ const TPODashboard = () => {
             </StaggerContainer>
 
             <div className="bg-white rounded-2xl p-8 border border-secondary-200 shadow-sm mt-8">
-                <h2 className="text-xl font-bold text-secondary-900 mb-6">Placement Distribution (Mock View)</h2>
-                <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-secondary-200 rounded-xl bg-secondary-50">
-                    <p className="text-secondary-500 font-medium">Detailed Recharts visual goes here mapping domains vs placements.</p>
+                <div className="flex items-center gap-2 mb-6">
+                    <Layers className="w-6 h-6 text-primary-500" />
+                    <h2 className="text-xl font-bold text-secondary-900">Placements by Domain</h2>
                 </div>
+                
+                {stats.domainStats && stats.domainStats.length > 0 ? (
+                    <div className="h-[400px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                layout="vertical"
+                                data={stats.domainStats}
+                                margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E5E7EB" />
+                                <XAxis type="number" hide />
+                                <YAxis 
+                                    dataKey="name" 
+                                    type="category" 
+                                    width={100}
+                                    tick={{ fontSize: 12, fontWeight: 500 }}
+                                    stroke="#4B5563"
+                                />
+                                <Tooltip 
+                                    cursor={{ fill: '#F3F4F6' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Bar 
+                                    dataKey="placements" 
+                                    radius={[0, 4, 4, 0]}
+                                    barSize={30}
+                                >
+                                    {stats.domainStats.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                ) : (
+                    <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-secondary-200 rounded-xl bg-secondary-50">
+                        <p className="text-secondary-500 font-medium">No placement data available to visualize yet.</p>
+                    </div>
+                )}
             </div>
 
         </FadeUp>
